@@ -302,7 +302,8 @@ reverse ::
   List a
   -> List a
 reverse Nil = Nil
-reverse (h :. t) = if t == Nil then h :. Nil else reverse t
+reverse =
+  "todo: Course.List#reverse"
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
