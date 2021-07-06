@@ -204,5 +204,5 @@ isHappy ::
 isHappy = contains 1 . firstRepeat . produce next
   where
     next v = sumInteger (square . toInteger . digitToInt <$> show' v)
-    square x = x * x
+    square = join (*)
     sumInteger = foldLeft (+) 0
