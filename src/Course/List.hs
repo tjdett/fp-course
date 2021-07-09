@@ -215,7 +215,7 @@ flatMap f a = flatten (map f a)
 flattenAgain ::
   List (List a)
   -> List a
-flattenAgain a = flatMap (\x -> x) a
+flattenAgain a = flatMap id a
 
 -- | Convert a list of optional values to an optional list of values.
 --
@@ -236,14 +236,36 @@ flattenAgain a = flatMap (\x -> x) a
 --
 -- >>> seqOptional (Empty :. map Full infinity)
 -- Empty
+
+-- let r = listOptional f t
+-- in case f h of
+--       Empty -> r
+--       Full q -> q :. r
+
+
+-- mapOptional _ Empty = Empty
+-- mapOptional f (Full a) = Full (f a)
+
+-- seqOptional ::
+--   List (Optional a)
+--   -> Optional (List a)
+-- seqOptional = 
+                       
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional
-  = = error "todo: Course.List#lseqOptional"
--- seqOptional Nil = Full Nil
--- seqOptional (Empty :. _) = Empty
--- seqOptional (Full a :. t) = a :. seqOptional t
+seqOptional Nil = Full Nil
+seqOptional (Empty :. _) = Empty
+seqOptional (Full a :. t) = mapOptional (\b -> a :. b) (seqOptional t)
+
+-- foldRight (\(Full a) c -> mapOptional (\bm -> a :. bm) c ) (Full Nil) (Full 1 :. Full 2 :. Nil)
+-- foldLeft (\c (Full a) -> mapOptional (\bm -> a :. bm) c ) (Full Nil) (Full 1 :. Full 2 :. Nil)
+
+-- let f = (\(Full x) -> x)
+--     r = seqOptional t
+-- in case h of
+--   Empty  -> Empty
+--   Full a -> Full ((a :. Nil) ++ ((f r) :. Nil))
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -281,11 +303,17 @@ find f (h :. t) = if f h then Full h else find f t
 --
 -- >>> lengthGT4 infinity
 -- True
+
+longerThan ::
+  Int -> List a -> Bool
+longerThan b (_ :. t) | b == 0    = True
+                      | otherwise = longerThan (b - 1) t
+longerThan _ Nil = False
+
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4
-  = error "todo: Course.List#lengthGT4"
+lengthGT4 a = longerThan 4 a
 
 -- | Reverse a list.
 --
@@ -302,8 +330,7 @@ reverse ::
   List a
   -> List a
 reverse Nil = Nil
-reverse =
-  "todo: Course.List#reverse"
+reverse (h :. t) = foldLeft (\b a -> a :. b) Nil t ++ (h :. Nil)
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -331,8 +358,8 @@ produce f x = x :. produce f (f x)
 notReverse ::
   List a
   -> List a
-notReverse =
-  error "todo: Is it even possible?"
+notReverse Nil = Nil
+notReverse (h :. t) = notReverse t
 
 ---- End of list exercises
 
