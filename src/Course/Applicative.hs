@@ -317,8 +317,9 @@ sequence ::
   Applicative k =>
   List (k a)
   -> k (List a)
-sequence Nil = pure Nil
-sequence (h :. t) = pure (:.) <*> h <*> sequence t
+-- sequence Nil = pure Nil
+-- sequence (h :. t) = (:.) <$> h <*> sequence t
+sequence l = foldRight (\x y -> (:.) <$> x <*> y) (pure Nil) l
 
 -- | Replicate an effect a given number of times.
 --
@@ -370,12 +371,9 @@ filtering ::
   (a -> k Bool)
   -> List a
   -> k (List a)
-filtering _ Nil = pure Nil
-filtering p (h :. t) = (++) <$> (\a -> if a then (h :. Nil) else Nil) <$> p h <*> filtering p t
-
--- filtering p (h :. t) = (\a -> if a then (:.) <$> pure h <*> filtering p t else pure Nil ) <$> (p h)
--- let ft = filter f t in if f h then h :. ft else ft
--- filtering p (h :. t) = (\a -> if a then (h :. filtering p t) else Nil ) <$> (p h)
+-- filtering _ Nil = pure Nil
+-- filtering p (h :. t) = (++) <$> (\a -> if a then (h :. Nil) else Nil) <$> p h <*> filtering p t
+filtering p l = foldRight (\x y -> ((\z -> if z then ((:.) x) else id) <$> p x) <*> y) (pure Nil) l
 
 -----------------------
 -- SUPPORT LIBRARIES --

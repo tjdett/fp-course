@@ -76,8 +76,10 @@ headOr ::
   a
   -> List a
   -> a
-headOr a Nil = a
-headOr _ (h :. _) = h
+  -- headOr a (h :. _) = 
+-- headOr a Nil = a
+headOr a l = foldRight (\x _ -> x) a l
+-- headOr _ (h :. _) = h
 
 -- | The product of the elements of a list.
 --
@@ -92,8 +94,9 @@ headOr _ (h :. _) = h
 product ::
   List Int
   -> Int
-product Nil = 1
-product (h :. t) = h * (product t)
+-- product Nil = 1
+-- product (h :. t) = h * (product t)
+product l = foldRight (*) 1 l
 
 -- | Sum the elements of the list.
 --
@@ -107,8 +110,9 @@ product (h :. t) = h * (product t)
 sum ::
   List Int
   -> Int
-sum Nil = 0
-sum (h :. t) = h + sum t
+-- sum Nil = 0
+-- sum (h :. t) = h + sum t
+sum l = foldRight (+) 0 l
 
 -- | Return the length of the list.
 --
@@ -134,8 +138,10 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map _ Nil = Nil
-map f (h :. t) = f h :. map f t
+-- map _ Nil = Nil
+-- map f (h :. t) = f h :. map f t
+map f l = foldRight (\x y -> f x :. y) Nil l
+
 
 -- | Return elements satisfying the given predicate.
 --
@@ -205,8 +211,9 @@ flatMap ::
   (a -> List b)
   -> List a
   -> List b
-flatMap _ Nil = Nil
-flatMap f a = flatten (map f a)
+-- flatMap _ Nil = Nil
+-- flatMap f a = flatten (map f a)
+flatMap f l = foldRight (\x y -> f x ++ y) Nil l
 
 -- | Flatten a list of lists to a list (again).
 -- HOWEVER, this time use the /flatMap/ function that you just wrote.
