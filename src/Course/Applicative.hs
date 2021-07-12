@@ -95,8 +95,7 @@ instance Applicative Optional where
     -> Optional a
     -> Optional b
   Empty <*> _ = Empty
-  _ <*> Empty = Empty
-  Full f <*> Full b = Full (f b)
+  Full f <*> b = mapOptional f b
 
 -- | Insert into a constant function.
 --
