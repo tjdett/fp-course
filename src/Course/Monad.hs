@@ -48,7 +48,7 @@ instance Monad List where
     -> List a
     -> List b
   _ =<< Nil = Nil
-  f =<< (h :. t) = (f h) ++ (f =<< t)
+  f =<< (h :. t) = f h ++ (f =<< t)
 
 -- | Binds a function on an Optional.
 --
@@ -68,9 +68,9 @@ instance Monad Optional where
 -- 119
 instance Monad ((->) t) where
   (=<<) ::
-    (a -> ((->) t b))
-    -> ((->) t a)
-    -> ((->) t b)
+    (a -> (->) t b)
+    -> (->) t a
+    -> (->) t b
   f =<< g = \y -> f (g y) y
 
 -- | Witness that all things with (=<<) and (<$>) also have (<*>).
@@ -130,8 +130,7 @@ join ::
   Monad k =>
   k (k a)
   -> k a
-join =
-  error "todo: Course.Monad#join"
+join a = id =<< a
 
 -- | Implement a flipped version of @(=<<)@, however, use only
 -- @join@ and @(<$>)@.
@@ -144,8 +143,8 @@ join =
   k a
   -> (a -> k b)
   -> k b
-(>>=) =
-  error "todo: Course.Monad#(>>=)"
+a >>= f = join (f <$> a)
+--  error "todo: Course.Monad#(>>=)"
 
 infixl 1 >>=
 
@@ -160,8 +159,7 @@ infixl 1 >>=
   -> (a -> k b)
   -> a
   -> k c
-(<=<) =
-  error "todo: Course.Monad#(<=<)"
+(<=<) f g a = f =<< g a
 
 infixr 1 <=<
 
