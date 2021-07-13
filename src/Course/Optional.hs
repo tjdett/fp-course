@@ -58,7 +58,7 @@ bindOptional f (Full a) = f a
   Optional a
   -> a
   -> a
-(Full a) ?? b = a
+(Full a) ?? _ = a
 Empty ?? a = a
 
 -- | Try the first optional for a value. If it has a value, use it; otherwise,
@@ -79,8 +79,7 @@ Empty ?? a = a
   Optional a
   -> Optional a
   -> Optional a
-(Full a) <+> Empty = Full a
-(Full a) <+> (Full b) = Full a
+(Full a) <+> _ = Full a
 Empty <+> (Full b) = Full b
 Empty <+> Empty = Empty
 
@@ -96,7 +95,7 @@ optional ::
   -> b
   -> Optional a
   -> b
-optional f a (Full b) = f b
+optional f _ (Full b) = f b
 optional _ a Empty = a
 
 applyOptional :: Optional (a -> b) -> Optional a -> Optional b

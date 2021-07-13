@@ -76,7 +76,7 @@ headOr ::
   a
   -> List a
   -> a
-  -- headOr a (h :. _) = 
+  -- headOr a (h :. _) =
 -- headOr a Nil = a
 headOr a l = foldRight (\x _ -> x) a l
 -- headOr _ (h :. _) = h
@@ -256,8 +256,8 @@ flattenAgain a = flatMap id a
 -- seqOptional ::
 --   List (Optional a)
 --   -> Optional (List a)
--- seqOptional = 
-                       
+-- seqOptional =
+
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
@@ -366,7 +366,7 @@ notReverse ::
   List a
   -> List a
 notReverse Nil = Nil
-notReverse (h :. t) = notReverse t
+notReverse (_ :. t) = notReverse t
 
 ---- End of list exercises
 
