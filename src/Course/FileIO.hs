@@ -79,6 +79,18 @@ the contents of c
 
 -}
 
+myTraverse ::
+  Applicative k => (a -> k b)
+  -> List a
+  -> k (List b)
+myTraverse f = sequence . (f <$>)
+
+myTraverse_ ::
+  Applicative k => (a -> k b)
+  -> List a
+  -> k ()
+myTraverse_ f = void . sequence . (f <$>)
+
 -- Given the file name, and file contents, print them.
 -- Use @putStrLn@.
 printFile ::
@@ -86,15 +98,17 @@ printFile ::
   -> Chars
   -> IO ()
 printFile path content = (<*) (putStrLn ("============ " ++ path)) (putStrLn content)
-  
+
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
 
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
-printFiles Nil = void (pure Nil :: IO (List ()))
-printFiles (h :. t) = (<*) (printFile (fst h) (snd h)) (printFiles t)
+-- printFiles Nil = pure ()
+-- printFiles (h :. t) = (<*) (printFile (fst h) (snd h)) (printFiles t)
+printFiles = myTraverse_ (uncurry printFile)
+-- printFiles l = void (sequence (uncurry printFile <$> l))
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
@@ -108,22 +122,32 @@ getFile path = (,) <$> pure path <*> readFile path
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles l = sequence (getFile <$> l)
+getFiles = myTraverse getFile
+-- getFiles l = sequence (getFile <$> l)
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@, @lines@, and @printFiles@.
 run ::
   FilePath
   -> IO ()
-run path = do
-  paths <- readFile path
-  files <- getFiles (lines paths)
-  printFiles files
+run path = printFiles =<< getFiles =<< (lines <$> readFile path)
+
+-- run path = do
+--   paths <- readFile path
+--   files <- getFiles (lines paths)
+--   printFiles files
+
+runAll ::
+  List FilePath
+  -> IO ()
+runAll = myTraverse_ run
+-- runAll l = void (sequence (run <$> l))
 
 -- /Tip:/ use @getArgs@ and @run@
 main ::
   IO ()
-main = run =<< (headOr Nil <$> getArgs)
+main = runAll =<< getArgs
+-- main = void (join((\x -> sequence(run <$> x)) <$> getArgs))
 
 ----
 
