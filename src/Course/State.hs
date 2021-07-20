@@ -169,13 +169,16 @@ distinct ::
   Ord a =>
   List a
   -> List a
-distinct l = eval (distinctM l) S.empty
+-- distinct l = eval (distinctM l) S.empty
+--  where
+--    distinctM Nil = pure Nil
+--    distinctM (h :. t) = get >>= \seen ->
+--      if h `S.member` seen
+--        then distinctM t
+--        else put (S.insert h seen) *> ((h :. ) <$> distinctM t)
+distinct l = eval (filtering f l) S.empty
  where
-   distinctM Nil = pure Nil
-   distinctM (h :. t) = get >>= \seen ->
-     if h `S.member` seen
-       then distinctM t
-       else put (S.insert h seen) *> ((h :. ) <$> distinctM t)
+  f v = get >>= \seen -> v `S.notMember` seen <$ put (S.insert v seen)
 
 -- | A happy number is a positive integer, where the sum of the square of its digits eventually reaches 1 after repetition.
 -- In contrast, a sad number (not a happy number) is where the sum of the square of its digits never reaches 1
