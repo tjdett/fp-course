@@ -267,7 +267,7 @@ is = satisfy . (==)
 -- True
 digit ::
   Parser Char
-digit = satisfy (`elem` "0123456789")
+digit = satisfy isDigit
 
 --
 -- | Return a parser that produces a space character but fails if
@@ -291,7 +291,7 @@ digit = satisfy (`elem` "0123456789")
 -- True
 space ::
   Parser Char
-space = satisfy (`elem` "\n ")
+space = satisfy isSpace
 
 -- | Return a parser that conses the result of the first parser onto the result of
 -- the second. Pronounced "cons parser".
