@@ -685,10 +685,10 @@ instance Comonad ListZipper where
 -- Empty
 instance Traversable ListZipper where
   traverse f lz =
-    (\r l v -> ListZipper l v r)
-    <$> traverse f (rights lz)
-    <*> (reverse <$> traverse f (reverse $ lefts lz))
+    ListZipper
+    <$> (reverse <$> traverse f (reverse $ lefts lz))
     <*> f (copure lz)
+    <*> traverse f (rights lz)
 
 -- | Implement the `Traversable` instance for `MaybeListZipper`.
 --
